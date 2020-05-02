@@ -30,4 +30,9 @@ class MainController extends Controller
 
         echo $blade->view()->make('create')->render();
     }
+
+    public function store()
+    {
+        Task::create();
+    }
 }

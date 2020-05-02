@@ -1,6 +1,7 @@
 @extends ('layout')
 @section('content')
     <div class="container">
+        <h1>Login</h1>
         <form action="auth/login" method="post">
             <div class="form-group">
                 <label for="name">Name</label>

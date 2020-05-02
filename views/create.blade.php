@@ -1,7 +1,8 @@
 @extends ('layout')
 @section('content')
     <div class="container">
-        <form action="main/store" method="post">
+        <h1>Create task</h1>
+        <form action="/main/store" method="post">
             <div class="form-group">
                 <label for="name">User name</label>
                 <input type="text" name="name" class="form-control" id="name"  placeholder="Enter name">

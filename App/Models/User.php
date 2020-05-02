@@ -11,36 +11,36 @@ class User extends Model
      */
     public static function auth()
     {
-        if(empty(trim($_POST["name"]))) {
+        if (empty(trim($_POST["name"]))) {
             echo $username_err = "Please enter your name.</br>";
         } else {
             $name = trim($_POST["name"]);
         }
 
-        if(empty(trim($_POST["password"]))) {
+        if (empty(trim($_POST["password"]))) {
             echo $password_err = "Please enter your password.";
         } else {
             $password = trim($_POST["password"]);
         }
 
-        if(empty($username_err) && empty($password_err)){
+        if (empty($username_err) && empty($password_err)) {
             $pdo = static::DB();
 
             $sql = "SELECT id, name, password FROM users WHERE name = :name";
 
-            if($stmt = $pdo->prepare($sql)){
+            if ($stmt = $pdo->prepare($sql)) {
                 $param_username = $name;
 
                 $stmt->bindParam(":name", $param_username, PDO::PARAM_STR);
 
-                if($stmt->execute()){
-                    if($stmt->rowCount() == 1){
-                        if($row = $stmt->fetch()){
+                if ($stmt->execute()) {
+                    if ($stmt->rowCount() == 1) {
+                        if ($row = $stmt->fetch()) {
                             $id = $row["id"];
                             $username = $row["name"];
                             $hashed_password = $row["password"];
 
-                            if(md5($password) == $hashed_password){
+                            if (md5($password) == $hashed_password) {
 
                                 session_start();
 
