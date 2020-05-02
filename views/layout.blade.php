@@ -15,7 +15,7 @@
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="/">Home</a>
+                            <a class="nav-link" href="/main/create">Create task</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav right">

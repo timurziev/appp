@@ -1,4 +1,3 @@
-# simpframe
 Simple MVC micro-framework to start
 
 First type command "composer update" to update dependencies

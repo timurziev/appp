@@ -3,7 +3,7 @@
     <div class="container">
         <form action="auth/login" method="post">
             <div class="form-group">
-                <label for="name">Email address</label>
+                <label for="name">Name</label>
                 <input type="text" name="name" class="form-control" id="name"  placeholder="Enter name">
             </div>
             <div class="form-group">
