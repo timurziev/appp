@@ -6,63 +6,69 @@ use PDO;
 
 class User extends Model
 {
+    public static $username_err, $password_err, $invalid_username_err, $invalid_password_err;
+
     /**
      * Authorize user
      */
     public static function auth()
     {
         if (empty(trim($_POST["name"]))) {
-            echo $username_err = "Please enter your name.</br>";
+            self::$username_err = "Please enter your name";
         } else {
             $name = trim($_POST["name"]);
         }
 
         if (empty(trim($_POST["password"]))) {
-            echo $password_err = "Please enter your password.";
+            self::$password_err = "Please enter your password";
         } else {
             $password = trim($_POST["password"]);
         }
 
-        if (empty($username_err) && empty($password_err)) {
-            $pdo = static::DB();
+        if (!empty(self::$username_err) && !empty(self::$password_err)) {
+            return 1;
+        }
 
-            $sql = "SELECT id, name, password FROM users WHERE name = :name";
+        $pdo = static::DB();
 
-            if ($stmt = $pdo->prepare($sql)) {
-                $param_username = $name;
+        $sql = "SELECT id, name, password FROM users WHERE name = :name";
 
-                $stmt->bindParam(":name", $param_username, PDO::PARAM_STR);
+        if ($stmt = $pdo->prepare($sql)) {
+            $param_username = $name;
 
-                if ($stmt->execute()) {
-                    if ($stmt->rowCount() == 1) {
-                        if ($row = $stmt->fetch()) {
-                            $id = $row["id"];
-                            $username = $row["name"];
-                            $hashed_password = $row["password"];
+            $stmt->bindParam(":name", $param_username, PDO::PARAM_STR);
 
-                            if (md5($password) == $hashed_password) {
+            if ($stmt->execute()) {
+                if ($stmt->rowCount() == 1) {
+                    if ($row = $stmt->fetch()) {
+                        $id = $row["id"];
+                        $username = $row["name"];
+                        $hashed_password = $row["password"];
 
-                                session_start();
+                        if (md5($password) == $hashed_password) {
 
-                                $_SESSION["loggedin"] = true;
-                                $_SESSION["id"] = $id;
-                                $_SESSION["name"] = $username;
-                                $_SESSION["is_admin"] = $row["is_admin"] ? true : false;
+                            session_start();
 
-                                header('Location: /');
-                            } else {
-                                echo $password_err = "The password you entered was not valid.";
-                            }
+                            $_SESSION["loggedin"] = true;
+                            $_SESSION["id"] = $id;
+                            $_SESSION["name"] = $username;
+                            $_SESSION["is_admin"] = $row["is_admin"] ? true : false;
+
+                            header('Location: /');
+                        } else {
+                            self::$invalid_password_err = "The password you entered was not valid";
+                            return 1;
                         }
-                    } else {
-                        echo $username_err = "No account found with that username.";
                     }
                 } else {
-                    echo "Oops! Something went wrong. Please try again later.";
+                    self::$invalid_username_err = "No account found with that username";
+                    return 1;
                 }
-
-                unset($stmt);
+            } else {
+                echo "Oops! Something went wrong. Please try again later.";
             }
+
+            unset($stmt);
         }
 
         unset($pdo);
