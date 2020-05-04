@@ -15,7 +15,12 @@ class Task extends Model
     public static function tasks()
     {
         $db = static::DB();
-        $sql = $db->prepare("SELECT * FROM tasks");
+
+        $columns = array('username','email','status');
+        $column = isset($_GET['column']) && in_array($_GET['column'], $columns) ? $_GET['column'] : $columns[0];
+        $sort_order = isset($_GET['order']) && strtolower($_GET['order']) == 'desc' ? 'DESC' : 'ASC';
+
+        $sql = $db->prepare("SELECT * FROM tasks ORDER BY " .  $column . ' ' . $sort_order);
         $sql->execute();
 
         $limit = 3;
@@ -30,7 +35,7 @@ class Task extends Model
 
         $start = ($page-1) * $limit;
 
-        $stmt = $db->prepare("SELECT * FROM tasks ORDER BY id DESC LIMIT $start, $limit");
+        $stmt = $db->prepare("SELECT * FROM tasks ORDER BY " . $column  . ' ' . $sort_order . " LIMIT $start, $limit");
         $stmt->execute();
 
         $stmt->setFetchMode(PDO::FETCH_OBJ);
@@ -57,10 +62,10 @@ class Task extends Model
                     self::$errors[] = "Please enter $key";
                 }
             }
-        }
 
-        if (count($data) < count($_POST)) {
-            return 1;
+            if (count($data) < count($_POST)) {
+                return 1;
+            }
         }
 
         $pdo = static::DB();
@@ -75,7 +80,7 @@ class Task extends Model
         $stmt= $pdo->prepare($sql);
         $stmt->execute($data);
 
-        header("Location: /main/create?message=success");
+        return header("Location: /main/create?message=success");
     }
 
     /**

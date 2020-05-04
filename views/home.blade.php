@@ -6,10 +6,10 @@
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Username</th>
-                <th scope="col">Email</th>
+                <th scope="col"><a href="/main/?column=username&order={{ $_GET['order'] == 'desc' ? 'asc' : 'desc' }}">Username</a></th>
+                <th scope="col"><a href="/main/?column=email&order={{ $_GET['order'] == 'desc' ? 'asc' : 'desc' }}">Email</a></th>
                 <th scope="col">Text</th>
-                <th scope="col">Status</th>
+                <th scope="col"><a href="/main/?column=status&order={{ $_GET['order'] == 'desc' ? 'asc' : 'desc' }}">Status</a></th>
             </tr>
             </thead>
             <tbody>
@@ -27,11 +27,11 @@
         @if($pages > 1)
             <nav>
                 <ul class="pagination">
-                    <li class="page-item"><a class="page-link" href="/main/?page=1">First</a></li>
+                    <li class="page-item"><a class="page-link" href="/main/?page=1&column={{ $_GET['column'] }}&order={{ $_GET['order'] }}">First</a></li>
                     <?php for($p=1; $p<=$pages; $p++){?>
-                    <li class="page-item <?= $page == $p ? 'active' : ''; ?>"><a class="page-link" href="/main/<?= '?page='.$p; ?>"><?= $p; ?></a></li>
+                    <li class="page-item <?= $page == $p ? 'active' : ''; ?>"><a class="page-link" href="/main/<?= '?page='.$p; ?>&column={{ $_GET['column'] }}&order={{ $_GET['order'] }}"><?= $p; ?></a></li>
                     <?php }?>
-                    <li class="page-item"><a class="page-link" href="/main/?page=<?= $pages; ?>">Last</a></li>
+                    <li class="page-item"><a class="page-link" href="/main/?page=<?= $pages; ?>&column={{ $_GET['column'] }}&order={{ $_GET['order'] }}">Last</a></li>
                 </ul>
             </nav>
         @endif
