@@ -14,9 +14,9 @@
                 <a class="navbar-brand" href="/">Appp</a>
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/main/create">Create task</a>
-                        </li>
+{{--                        <li class="nav-item">--}}
+{{--                            <a class="nav-link" href="/main/create">Create task</a>--}}
+{{--                        </li>--}}
                     </ul>
                     <ul class="navbar-nav right">
                         <li class="nav-item">

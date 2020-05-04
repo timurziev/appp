@@ -2,6 +2,11 @@
 @section('content')
     <div class="container">
         <h1>Create task</h1>
+        @if($_GET['message'] == 'success')
+            <div class="alert alert-success" role="alert">
+                Task created successfully!
+            </div>
+        @endif
         <form action="/main/store" method="post">
             <div class="form-group">
                 <label for="name">User name</label>

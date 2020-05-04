@@ -12,13 +12,14 @@ class MainController extends Controller
      *
      * @param $id
      */
-    public function index($id = null)
+    public function index()
     {
-        $tasks = Task::tasks($id);
+        $tasks = Task::tasks();
+        $pages = Task::$total_pages;
 
         $blade = new Blade($this->views, $this->cache);
 
-        echo $blade->view()->make('home', ['tasks' => $tasks])->render();
+        echo $blade->view()->make('home', ['tasks' => $tasks, 'pages' => $pages])->render();
     }
 
     /**
@@ -34,5 +35,7 @@ class MainController extends Controller
     public function store()
     {
         Task::create();
+
+        header("Location: /main/create?message=success");
     }
 }
