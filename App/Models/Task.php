@@ -6,7 +6,7 @@ use PDO;
 
 class Task extends Model
 {
-    public static $total_pages;
+    public static $total_pages, $errors = [];
 
     /**
      * @param $id
@@ -28,7 +28,6 @@ class Task extends Model
             $page = $_GET['page'];
         }
 
-
         $start = ($page-1) * $limit;
 
         $stmt = $db->prepare("SELECT * FROM tasks ORDER BY id DESC LIMIT $start, $limit");
@@ -39,47 +38,56 @@ class Task extends Model
         return $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Create task
+     */
     public function create()
     {
-        $name = trim($_POST["name"]);
-        $email = trim($_POST["email"]);
-        $text = trim($_POST["text"]);
+        $data = [];
 
-        if (Task::validation($name, $email, $text)) {
-            $pdo = static::DB();
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            foreach($_POST as $key => $value) {
+                if (!empty($value)) {
+                    $data[] = self::validate($_POST[$key]);
 
-            $data = [
-                'name' => $name,
-                'email' => $email,
-                'text' => $text
-            ];
-
-            $sql = "INSERT INTO tasks (username, email, text, created_at) VALUES (:name, :email, :text, NOW())";
-            $stmt= $pdo->prepare($sql);
-            $stmt->execute($data);
-        }
-    }
-
-    public function validation($name, $email, $text)
-    {
-        if (empty($name)) {
-            echo $name_err = "Please enter your name.</br>";
-        }
-
-        if (empty($email)) {
-            echo $email_err = "Please enter your email.</br>";
-        } else {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                echo $valid_email_err = "Please enter valid email.</br>";
+                    if ($_POST[$key] == $_POST['email'] && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+                        self::$errors[] = "Please enter valid email";
+                    }
+                } else {
+                    self::$errors[] = "Please enter $key";
+                }
             }
         }
 
-        if (empty($text)) {
-            echo $text_err = "Please enter text.</br>";
-        }
-
-        if (empty($name_err) || empty($email_err) || empty($valid_email_err) || empty($text_err)) {
+        if (count($data) < count($_POST)) {
             return 1;
         }
+
+        $pdo = static::DB();
+
+        $data = [
+            'name' => $data[0],
+            'email' => $data[1],
+            'text' => $data[2]
+        ];
+
+        $sql = "INSERT INTO tasks (username, email, text, created_at) VALUES (:name, :email, :text, NOW())";
+        $stmt= $pdo->prepare($sql);
+        $stmt->execute($data);
+
+        header("Location: /main/create?message=success");
+    }
+
+    /**
+     * @param $data
+     * @return int
+     */
+    public function validate($data)
+    {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+
+        return $data;
     }
 }

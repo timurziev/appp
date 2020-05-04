@@ -32,10 +32,16 @@ class MainController extends Controller
         echo $blade->view()->make('create')->render();
     }
 
+    /**
+     * Store task
+     */
     public function store()
     {
         Task::create();
 
-        header("Location: /main/create?message=success");
+        $errors = Task::$errors;
+        $blade = new Blade($this->views, $this->cache);
+
+        echo $blade->view()->make('create', ['errors' => $errors])->render();
     }
 }
