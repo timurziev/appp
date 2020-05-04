@@ -9,8 +9,6 @@ class MainController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @param $id
      */
     public function index()
     {
@@ -34,10 +32,41 @@ class MainController extends Controller
 
     /**
      * Store task
+     *
+     * @param null $id
      */
     public function store()
     {
         Task::create();
+
+        $errors = Task::$errors;
+        $blade = new Blade($this->views, $this->cache);
+
+        echo $blade->view()->make('create', ['errors' => $errors])->render();
+    }
+
+    /**
+     * Edit task
+     *
+     * @param $id
+     */
+    public function edit($id)
+    {
+        $task = Task::edit($id);
+
+        $blade = new Blade($this->views, $this->cache);
+
+        echo $blade->view()->make('create', ['task' => $task])->render();
+    }
+
+    /**
+     * Update task
+     *
+     * @param $id
+     */
+    public function update($id)
+    {
+        Task::create($id);
 
         $errors = Task::$errors;
         $blade = new Blade($this->views, $this->cache);

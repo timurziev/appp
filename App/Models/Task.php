@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use mysql_xdevapi\Result;
 use PDO;
 
 class Task extends Model
@@ -16,7 +17,7 @@ class Task extends Model
     {
         $db = static::DB();
 
-        $columns = array('username','email','status');
+        $columns = array('username', 'email', 'status');
         $column = isset($_GET['column']) && in_array($_GET['column'], $columns) ? $_GET['column'] : $columns[0];
         $sort_order = isset($_GET['order']) && strtolower($_GET['order']) == 'desc' ? 'DESC' : 'ASC';
 
@@ -44,9 +45,10 @@ class Task extends Model
     }
 
     /**
-     * Create task
+     * @param $id
+     * @return int|void
      */
-    public function create()
+    public function create($id = null)
     {
         $data = [];
 
@@ -76,11 +78,45 @@ class Task extends Model
             'text' => $data[2]
         ];
 
-        $sql = "INSERT INTO tasks (username, email, text, created_at) VALUES (:name, :email, :text, NOW())";
-        $stmt= $pdo->prepare($sql);
-        $stmt->execute($data);
+        if ($id) {
+            if (!isset($_SESSION["is_admin"])) {
+                return header("Location: /auth");
+            }
+
+            $task = $pdo->prepare("SELECT text FROM tasks WHERE id = $id");
+            $task->execute();
+            $row = $task->fetch();
+
+            $status = $_POST['status'];
+            $edited = $row['text'] !== $data['text'] ? 1 : 0;
+
+            $sql = "UPDATE tasks SET username = ?, email = ?, text = ?, status = ?, edited = ? WHERE id = ?";
+
+            $stmt= $pdo->prepare($sql);
+            $stmt->execute([$data['name'], $data['email'], $data['text'], $status, $edited, $id]);
+
+            return header("Location: /main/edit/$id?message=success");
+        } else {
+            $sql = "INSERT INTO tasks (username, email, text, created_at) VALUES (:name, :email, :text, NOW())";
+
+            $stmt= $pdo->prepare($sql);
+            $stmt->execute($data);
+        }
 
         return header("Location: /main/create?message=success");
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function edit($id)
+    {
+        $db = static::DB();
+        $sql = "SELECT * FROM tasks WHERE id = $id";
+        $result = $db->query($sql);
+
+        return $result->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

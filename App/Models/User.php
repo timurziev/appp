@@ -47,6 +47,7 @@ class User extends Model
                                 $_SESSION["loggedin"] = true;
                                 $_SESSION["id"] = $id;
                                 $_SESSION["name"] = $username;
+                                $_SESSION["is_admin"] = $row["is_admin"] ? true : false;
 
                                 header('Location: /');
                             } else {
